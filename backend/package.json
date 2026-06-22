@@ -1,0 +1,17 @@
+{
+  "name": "typeahead-backend",
+  "version": "1.0.0",
+  "description": "Search Typeahead backend — Express + SQLite primary store, Redis distributed cache (consistent hashing), recency-aware trending, batch writes.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "ingest": "node scripts/ingest.js",
+    "generate": "node scripts/generate_synthetic.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.0",
+    "express": "^4.21.2",
+    "ioredis": "^5.11.1"
+  }
+}

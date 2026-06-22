@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Typeahead Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Liquid-glass "stage": a soft aurora + drifting blurred blobs that the
+       frosted panels refract. Decorative only, hidden from assistive tech. -->
+  <div class="bg" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <!-- inline SVG logo mark (Lucide "search" style) -->
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <span>Typeahead</span>
+      </div>
+      <span class="tagline">SST-2028 · HLD101 Search Typeahead</span>
+    </header>
+
+    <main class="main">
+      <section class="search-area">
+        <h1 class="headline">What are you looking for?</h1>
+        <p class="subhead">Start typing — suggestions appear after 2 characters.</p>
+
+        <!-- combobox: input + dropdown together form an accessible autocomplete -->
+        <div class="search-wrap">
+          <div class="search-box" role="combobox" aria-expanded="false"
+               aria-owns="suggestions" aria-haspopup="listbox">
+            <button class="search-btn" id="search-btn" type="button" aria-label="Search">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </svg>
+            </button>
+            <input
+              id="search-input"
+              type="text"
+              class="search-input"
+              placeholder="Search queries…"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-autocomplete="list"
+              aria-controls="suggestions"
+              aria-label="Search"
+            />
+            <span class="spinner" id="spinner" hidden aria-hidden="true"></span>
+            <button class="clear-btn" id="clear-btn" hidden aria-label="Clear search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- suggestion dropdown (listbox) -->
+          <ul class="suggestions" id="suggestions" role="listbox" aria-label="Suggestions" hidden></ul>
+        </div>
+
+        <!-- status line: loading / error / empty-state messages (aria-live for SR) -->
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+
+        <!-- dummy /search response banner (wired in Milestone 3) -->
+        <div class="banner" id="search-response" role="status" aria-live="polite" hidden></div>
+      </section>
+
+      <!-- trending panel (wired in Milestone 5) -->
+      <aside class="trending" aria-labelledby="trending-title">
+        <div class="trending-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 17l6-6 4 4 8-8"></path><path d="M17 7h4v4"></path>
+          </svg>
+          <h2 id="trending-title">Trending</h2>
+        </div>
+        <ol class="trending-list" id="trending-list"></ol>
+        <p class="trending-empty" id="trending-empty">Trending searches will appear here.</p>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span id="footer-note">Suggestions sorted by popularity · cache-accelerated</span>
+    </footer>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+/* ---------------------------------------------------------------------------
+   Typeahead UI — "Liquid Glass" theme (light).
+   Frosted translucent panels (backdrop-filter) floating over a soft aurora.
+   Teal accent preserved; dark-teal ink keeps text high-contrast on glass.
+--------------------------------------------------------------------------- */
+:root {
+  /* accents / ink */
+  --accent: #0d9488;
+  --accent-strong: #0f766e;
+  --accent-2: #6366f1;          /* indigo, used in the aurora + glows */
+  --ink: #0f2e2b;               /* dark teal — high contrast on light glass */
+  --ink-soft: #44615c;          /* muted text (>= 4.5:1 on glass) */
+  --danger: #dc2626;
+
+  /* glass material */
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-blur: 24px;
+  --hairline: rgba(255, 255, 255, 0.6);   /* inset top highlight */
+
+  --radius: 22px;
+  --radius-sm: 14px;
+  --radius-pill: 999px;
+
+  --shadow-glass: 0 10px 40px rgba(20, 60, 70, 0.16), 0 2px 8px rgba(20, 60, 70, 0.07);
+  --shadow-float: 0 22px 70px rgba(20, 60, 70, 0.24), 0 4px 14px rgba(20, 60, 70, 0.1);
+
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --space: 8px;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font);
+  color: var(--ink);
+  background: #e9f6f3;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* ---------- the aurora stage ---------- */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: linear-gradient(135deg, #d6f4ef 0%, #e7f0ff 48%, #efe7ff 100%);
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0.8;
+  will-change: transform;
+}
+.blob-1 { width: 600px; height: 600px; top: -150px; left: -130px;
+  background: radial-gradient(circle at 30% 30%, #14d6c0, transparent 70%); }
+.blob-2 { width: 700px; height: 700px; bottom: -200px; right: -150px;
+  background: radial-gradient(circle at 30% 30%, #6a7bff, transparent 70%); }
+.blob-3 { width: 520px; height: 520px; top: 26%; left: 50%;
+  background: radial-gradient(circle at 30% 30%, #b06cff, transparent 70%); opacity: 0.72; }
+
+/* shared glass surface */
+.glass,
+.topbar,
+.search-box,
+.suggestions,
+.trending,
+.banner {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass), inset 0 1px 0 var(--hairline);
+}
+
+.app { min-height: 100dvh; display: flex; flex-direction: column; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-left: 0; border-right: 0; border-top: 0;
+  border-radius: 0;
+}
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
+.brand-icon { width: 22px; height: 22px; color: var(--accent); }
+.tagline { color: var(--ink-soft); font-size: 13px; }
+
+/* ---------- layout ---------- */
+.main {
+  flex: 1; width: 100%; max-width: 1080px; margin: 0 auto;
+  padding: 56px 24px; display: grid; grid-template-columns: 1fr 300px;
+  gap: 40px; align-items: start;
+}
+@media (max-width: 820px) { .main { grid-template-columns: 1fr; padding: 32px 16px; gap: 24px; } }
+
+.headline { font-size: 32px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; }
+.subhead { color: var(--ink-soft); margin: 0 0 26px; }
+
+/* ---------- search box ---------- */
+.search-wrap { position: relative; }
+.search-box {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0) 50%), var(--glass-strong);
+  padding: 0 16px; height: 60px;
+  border-radius: var(--radius);
+  transition: box-shadow 280ms var(--ease-spring), border-color 220ms var(--ease-out),
+              transform 220ms var(--ease-spring);
+}
+.search-box:focus-within {
+  border-color: rgba(13, 148, 136, 0.55);
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.18), var(--shadow-float),
+              inset 0 1px 0 var(--hairline);
+  transform: translateY(-1px);
+}
+.search-btn {
+  border: none; background: transparent; padding: 0; margin: 0;
+  display: flex; align-items: center; cursor: pointer; flex: none;
+  color: var(--ink-soft); transition: color 180ms var(--ease-out), transform 180ms var(--ease-spring);
+}
+.search-btn:hover { color: var(--accent); transform: scale(1.08); }
+.search-btn:active { transform: scale(0.94); }
+.search-icon { width: 20px; height: 20px; flex: none; }
+.search-input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-family: inherit; font-size: 17px; color: var(--ink); height: 100%;
+}
+.search-input::placeholder { color: var(--ink-soft); }
+
+.clear-btn {
+  border: none; background: rgba(255,255,255,0.4); cursor: pointer;
+  color: var(--ink-soft); padding: 4px; display: flex; border-radius: 50%;
+  width: 28px; height: 28px; align-items: center; justify-content: center;
+  transition: background 160ms var(--ease-out), color 160ms var(--ease-out), transform 160ms var(--ease-spring);
+}
+.clear-btn:hover { background: rgba(255,255,255,0.7); color: var(--ink); transform: scale(1.05); }
+.clear-btn svg { width: 16px; height: 16px; }
+
+.spinner {
+  width: 18px; height: 18px; flex: none;
+  border: 2.5px solid rgba(13,148,136,0.25); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 700ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- suggestions dropdown (glass) ---------- */
+.suggestions {
+  position: absolute; top: calc(100% + 10px); left: 0; right: 0;
+  margin: 0; padding: 8px; list-style: none;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.32), rgba(255,255,255,0) 42%), rgba(255,255,255,0.45);
+  -webkit-backdrop-filter: blur(34px) saturate(190%);
+  backdrop-filter: blur(34px) saturate(190%);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-float), inset 0 1px 0 var(--hairline);
+  z-index: 40; max-height: 440px; overflow-y: auto;
+}
+.suggestion {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 14px; border-radius: var(--radius-sm); cursor: pointer;
+  transition: background 160ms var(--ease-out), transform 160ms var(--ease-spring), box-shadow 160ms var(--ease-out);
+}
+.suggestion:hover { background: rgba(255, 255, 255, 0.6); }
+.suggestion.active {
+  background: rgba(13, 148, 136, 0.12);
+  box-shadow: inset 0 0 0 1.5px rgba(13, 148, 136, 0.5);
+}
+.suggestion-text { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.suggestion-text svg { width: 16px; height: 16px; color: var(--ink-soft); flex: none; }
+.suggestion-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.suggestion-label .match { color: var(--ink-soft); font-weight: 400; }
+.suggestion-count {
+  font-size: 12px; font-variant-numeric: tabular-nums; color: var(--ink-soft);
+  background: rgba(255, 255, 255, 0.55); border: 1px solid var(--glass-border);
+  padding: 3px 9px; border-radius: var(--radius-pill); flex: none;
+}
+
+/* ---------- status / banner ---------- */
+.status { min-height: 20px; margin-top: 16px; font-size: 14px; color: var(--ink-soft); }
+.status.error { color: var(--danger); }
+.status .retry { margin-left: 8px; color: var(--accent); cursor: pointer;
+  text-decoration: underline; background: none; border: none; font: inherit; }
+
+.banner {
+  margin-top: 22px; display: flex; align-items: center; gap: 10px;
+  background: var(--glass-strong);
+  border-left: 4px solid var(--accent); border-radius: var(--radius-sm);
+  padding: 14px 18px;
+}
+.banner svg { width: 18px; height: 18px; color: var(--accent); flex: none; }
+.banner b { font-weight: 600; }
+
+/* ---------- trending panel (glass) ---------- */
+.trending { border-radius: var(--radius); padding: 22px; background: var(--glass); }
+.trending-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.trending-head svg { width: 18px; height: 18px; color: var(--accent-2); }
+.trending-head h2 { font-size: 16px; margin: 0; font-weight: 700; }
+.trending-list { margin: 0; padding: 0; list-style: none; counter-reset: rank; }
+.trending-list li {
+  counter-increment: rank; display: flex; align-items: center; gap: 10px;
+  padding: 10px 6px; border-bottom: 1px solid rgba(20, 60, 70, 0.08);
+  cursor: pointer; font-size: 14px; border-radius: 8px;
+  transition: background 160ms var(--ease-out), padding-left 160ms var(--ease-spring);
+}
+.trending-list li:last-child { border-bottom: none; }
+.trending-list li:hover { background: rgba(255,255,255,0.5); padding-left: 12px; }
+.trending-list li::before {
+  content: counter(rank); font-variant-numeric: tabular-nums; font-weight: 700;
+  color: var(--accent); width: 18px; text-align: right; flex: none;
+}
+.t-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trending-empty { color: var(--ink-soft); font-size: 13px; margin: 4px 0 0; }
+
+/* ---------- footer ---------- */
+.footer { text-align: center; padding: 22px; color: var(--ink-soft); font-size: 12px; }
+
+/* ---------- fluid motion ---------- */
+/* slowly drifting aurora blobs — the "alive" background */
+@keyframes drift-1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(60px,40px) scale(1.08); } }
+@keyframes drift-2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-50px,-30px) scale(1.1); } }
+@keyframes drift-3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-40px,50px) scale(0.95); } }
+.blob-1 { animation: drift-1 14s ease-in-out infinite; }
+.blob-2 { animation: drift-2 18s ease-in-out infinite; }
+.blob-3 { animation: drift-3 20s ease-in-out infinite; }
+
+/* staggered fade-rise as suggestions appear */
+@keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.suggestion { animation: rise-in 300ms var(--ease-out) both; }
+.suggestion:nth-child(1) { animation-delay: 20ms; }
+.suggestion:nth-child(2) { animation-delay: 48ms; }
+.suggestion:nth-child(3) { animation-delay: 76ms; }
+.suggestion:nth-child(4) { animation-delay: 104ms; }
+.suggestion:nth-child(5) { animation-delay: 132ms; }
+.suggestion:nth-child(6) { animation-delay: 160ms; }
+.suggestion:nth-child(7) { animation-delay: 188ms; }
+.suggestion:nth-child(8) { animation-delay: 216ms; }
+.suggestion:nth-child(9) { animation-delay: 244ms; }
+.suggestion:nth-child(10) { animation-delay: 272ms; }
+.banner { animation: rise-in 260ms var(--ease-out) both; }
+
+/* pointer-reactive specular sheen on the glass search box (purely visual) */
+.search-box { position: relative; overflow: hidden; }
+.search-box > * { position: relative; z-index: 1; }   /* keep input/buttons above the sheen */
+.search-box::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 0%), rgba(255,255,255,0.7), transparent 62%);
+  opacity: 0; transition: opacity 260ms var(--ease-out);
+}
+.search-box:hover::before,
+.search-box:focus-within::before { opacity: 1; }
+
+/* respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .blob-1, .blob-2, .blob-3 { animation: none; }
+  .suggestion, .banner { animation: none; }
+  .search-box::before { transition: none; }
+  .spinner { animation-duration: 1600ms; }
+}
+
+/* fallback for browsers without backdrop-filter: use near-opaque panels */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .topbar, .search-box, .suggestions, .trending, .banner, .glass {
+    background: rgba(255, 255, 255, 0.93);
+  }
+}
+
+[hidden] { display: none !important; }

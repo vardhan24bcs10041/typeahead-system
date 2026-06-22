@@ -1,0 +1,57 @@
+# docker-compose.yml — everything the system needs, in one command:
+#   docker compose up --build
+#
+# Services:
+#   app                the Express API + static frontend (SQLite embedded)
+#   redis-0/1/2        three INDEPENDENT Redis cache nodes (NOT a cluster);
+#                      the app routes between them with its own consistent-hash
+#                      ring, which is the assignment's whole point.
+#
+# The Redis nodes run cache-only (no persistence): a cache is meant to be
+# rebuildable from the primary store, so we disable RDB/AOF on purpose.
+
+services:
+  redis-0:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports: ["6379:6379"]
+
+  redis-1:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports: ["6380:6379"]
+
+  redis-2:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports: ["6381:6379"]
+
+  app:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: "3000"
+      # node ids the ring routes across (host:port within the compose network)
+      REDIS_NODES: "redis-0:6379,redis-1:6379,redis-2:6379"
+      DB_PATH: "/data/typeahead.db"      # SQLite on a named volume (persists)
+      FRONTEND_DIR: "/frontend"
+      CACHE_TTL_SECONDS: "60"
+      BATCH_INTERVAL_MS: "2000"          # used in Milestone 6
+      BATCH_MAX_SIZE: "500"              # used in Milestone 6
+    ports: ["3000:3000"]
+    volumes:
+      - dbdata:/data
+      # live-mount the static UI so frontend edits show without a rebuild
+      - ./frontend:/frontend:ro
+    depends_on:
+      - redis-0
+      - redis-1
+      - redis-2
+
+volumes:
+  dbdata:

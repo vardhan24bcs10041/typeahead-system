@@ -1,0 +1,13 @@
+# Never copy host-built artifacts into the image. In particular, node_modules
+# contains native binaries (better-sqlite3) compiled for the HOST OS (Windows);
+# copying them into the Linux image causes "invalid ELF header". `npm ci` inside
+# the Dockerfile rebuilds them correctly for Linux.
+**/node_modules
+
+# local SQLite data + datasets (the container uses its own volume + self-seeds)
+backend/data
+
+# vcs / logs / env
+.git
+*.log
+.env
