@@ -16,8 +16,8 @@ hashing**, a SQLite primary store, and **batched write-behind** for search count
 docker compose up --build
 ```
 
-Then open **http://localhost:3000**. That's it — the app self-seeds a 150k-row
-synthetic dataset on first boot, so it works with no internet.
+Then open **http://localhost:3000**. The app self-seeds a 150k-row synthetic
+dataset on first boot, so it works with no internet.
 
 Services started: `app` (API + UI) and `redis-0` / `redis-1` / `redis-2`
 (three independent cache nodes).
@@ -62,9 +62,9 @@ The system loads any `query<TAB>count` TSV (`DATASET_PATH`). Three sources are s
 The container has its own volume DB. To (re)load real data into the running stack:
 ```bash
 node backend/scripts/fetch_wordfreq.js
-docker cp backend/data/queries.tsv kshitij-app-1:/tmp/queries.tsv
+docker cp backend/data/queries.tsv typeahead-app-1:/tmp/queries.tsv
 docker compose exec -e DATASET_PATH=/tmp/queries.tsv app node scripts/ingest.js
-docker exec kshitij-redis-0-1 redis-cli flushall   # repeat for redis-1, redis-2
+docker exec typeahead-redis-0-1 redis-cli flushall   # repeat for redis-1, redis-2
 ```
 Canonical format: `"<query>\t<count>"` per line.
 
@@ -85,7 +85,7 @@ Full details: [docs/API.md](docs/API.md).
 
 ---
 
-## How it works (1-minute tour)
+## How it works
 
 - **Suggestions** are a prefix **range-scan** on SQLite's `query` index
   (`WHERE query >= 'ip' AND query < 'iq'`), top-10 by count — served **cache-first**.

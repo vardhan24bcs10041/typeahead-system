@@ -1,8 +1,7 @@
 # Project Report — Search Typeahead System
 
-_Analysis of the codebase at `Documents/Codes/kshitij`. Covers every source, config,
-and documentation file. Skipped (per scope): `node_modules/`, `package-lock.json`,
-binaries (`*.db`, `*.node`, `*.png`), and the two assignment PDFs._
+A walkthrough of the system: what it does, how it is structured, the data model,
+the APIs, and notes on design trade-offs and known limitations.
 
 ---
 
@@ -202,9 +201,6 @@ edits. The DB persists on the `dbdata` named volume; the app self-seeds if empty
 - `prefixUpperBound` uses `String.fromCharCode(lastCode + 1)` on a UTF-16 code unit;
   prefixes ending in `￿` or a surrogate could compute an off range. Fine for
   lowercase ASCII/words; an edge case for exotic Unicode.
-- `frontend/app.js` `submitSearch` catch still shows the stale fallback message
-  *"Search endpoint coming in Milestone 3"* — the endpoint exists now, so on a real
-  network error the message is misleading. Cosmetic; should be updated.
 - Env values parsed with `parseInt`/`parseFloat` without validation; a malformed env
   (e.g. `CACHE_TTL_SECONDS=abc`) yields `NaN` and would only fail at the Redis call
   (caught) — worth guarding.
@@ -237,7 +233,7 @@ edits. The DB persists on the `dbdata` named volume; the app self-seeds if empty
 
 ---
 
-## 10. Setup / Run Instructions (as understood from the code)
+## 10. Setup / Run Instructions
 
 **Docker (recommended):**
 ```bash
@@ -270,9 +266,3 @@ node scripts/bench.js           # latency + cache hit rate + speedup
 curl "http://localhost:3000/suggest?q=foo"
 curl "http://localhost:3000/metrics"
 ```
-
----
-
-_Nothing in the core source was skipped — every file under `backend/src`, `backend/scripts`,
-`frontend`, and `docs`, plus all config files, was read. Only dependencies, the lockfile,
-binaries, and the assignment PDFs were excluded per the requested scope._
