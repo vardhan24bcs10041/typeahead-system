@@ -1,9 +1,9 @@
-// hashing_demo.js — evidence that consistent hashing minimizes key movement.
+// hashing_demo.js — compare key movement under consistent hashing vs hash % N.
 //
 // Run:  node scripts/hashing_demo.js
-// Shows the whole reason we use a ring instead of `hash(key) % N`: when a cache
-// node leaves, consistent hashing moves only the keys that lived on THAT node
-// (~1/N), while `hash % N` reshuffles almost everything (a full cache flush).
+// When a cache node leaves, consistent hashing moves only the keys that lived on
+// that node (~1/N), while `hash % N` reshuffles almost everything (a full cache
+// flush). This prints both numbers side by side.
 
 import crypto from 'node:crypto';
 import { ConsistentHashRing } from '../src/cache/ring.js';

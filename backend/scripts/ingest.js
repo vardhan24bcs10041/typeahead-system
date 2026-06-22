@@ -1,16 +1,15 @@
 // ingest.js — load the query->count dataset into SQLite.
 //
-// SOURCE PRECEDENCE:
+// Source precedence:
 //   1. A TSV file ("<query>\t<count>" per line) at $DATASET_PATH or
-//      backend/data/queries.tsv. This is the canonical intermediate format.
-//      The real Wikipedia path (scripts/fetch_wikipedia.js, documented in the
-//      README) produces exactly this file.
+//      backend/data/queries.tsv — the canonical intermediate format that the
+//      fetch scripts (fetch_wikipedia.js / fetch_wordfreq.js) produce.
 //   2. If no file is present, generate a reproducible synthetic dataset so the
 //      system always works offline.
 //
-// This is a FULL (re)load: it clears the table, then bulk-inserts the aggregated
+// This is a full (re)load: it clears the table, then bulk-inserts the aggregated
 // rows inside a single transaction (fast, and avoids a fsync per row). Runtime
-// /search increments (Milestone 3) build on top of this seed.
+// /search increments build on top of this seed.
 
 import fs from 'node:fs';
 import path from 'node:path';

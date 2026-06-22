@@ -1,14 +1,14 @@
 // app.js — typeahead frontend logic.
 //
-// Three engineering decisions live here (the viva-worthy ones):
-//   1. DEBOUNCE: wait until the user pauses typing before calling the backend,
-//      so "iphone" = 1 request, not 6.
+// Three decisions worth noting:
+//   1. Debounce: wait until the user pauses typing before calling the backend,
+//      so "iphone" is 1 request, not 6.
 //   2. MIN_CHARS = 2: don't query on a single character (huge, low-value result
-//      set + the most expensive query to sort server-side).
-//   3. RACE GUARD: a fast typist can have several requests in flight; a slow
-//      earlier one must NOT overwrite a newer result. We use AbortController to
-//      cancel the previous request AND a monotonically increasing request id to
-//      ignore any stale response that still slips through.
+//      set and the most expensive query to sort server-side).
+//   3. Race guard: a fast typist can have several requests in flight; a slow
+//      earlier one must not overwrite a newer result. AbortController cancels the
+//      previous request, and a monotonic request id ignores any stale response
+//      that still slips through.
 
 const DEBOUNCE_MS = 200;
 const MIN_CHARS = 2;
@@ -151,7 +151,7 @@ async function submitSearch(query) {
   }
 }
 
-// --- trending (populated in Milestone 5; degrades gracefully until then) -----
+// --- trending (degrades gracefully if unavailable) --------------------------
 async function loadTrending() {
   try {
     const res = await fetch('/trending');

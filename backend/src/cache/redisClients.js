@@ -1,8 +1,8 @@
 // redisClients.js — one Redis connection per logical cache node.
 //
-// These are THREE independent standalone Redis servers (not Redis Cluster):
-// we route between them ourselves with the consistent-hashing ring, which is
-// the whole point of the assignment. Node id = its "host:port" address string.
+// These are three independent standalone Redis servers (not Redis Cluster); we
+// route between them ourselves with the consistent-hashing ring. A node id is
+// its "host:port" address string.
 
 import Redis from 'ioredis';
 

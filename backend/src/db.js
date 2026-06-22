@@ -1,11 +1,9 @@
 // db.js — SQLite connection + schema.
 //
-// SQLite is our PRIMARY data store (system-of-record) for query -> count.
-// It is embedded (a file), not a separate network service. We accept that
-// trade-off deliberately: the *distribution* concern in this assignment lives
-// in the cache tier (3 Redis nodes + consistent hashing), while SQLite is the
-// single-node source of truth. In production you'd swap this for a networked /
-// sharded SQL DB; the schema and access patterns stay identical.
+// SQLite is the primary store (source of truth) for query -> count. It is
+// embedded rather than a separate network service; the distribution concern
+// lives in the cache tier (3 Redis nodes + consistent hashing). Swapping in a
+// networked/sharded SQL DB later wouldn't change the schema or access patterns.
 
 import Database from 'better-sqlite3';
 import fs from 'node:fs';
@@ -23,23 +21,18 @@ fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 
 const db = new Database(DB_PATH);
 
-// WAL = Write-Ahead Logging. Readers and the single writer no longer block each
-// other (a reader sees a consistent snapshot while a write appends to the WAL).
-// Viva tie-in: WAL is an append-first log — same family of idea as the LSM-tree
-// (Sessions 10-11) and the Kafka commit log (Session 5). It also means our one
-// SQLite writer won't stall the latency-critical /suggest reads.
+// WAL (Write-Ahead Logging): readers and the single writer don't block each
+// other, so the SQLite writer never stalls the latency-critical /suggest reads.
 db.pragma('journal_mode = WAL');
 // NORMAL is the recommended durability/performance balance under WAL.
 db.pragma('synchronous = NORMAL');
 
 // One row per distinct, normalized query.
-//   query  -> TEXT PRIMARY KEY => SQLite builds a B-tree index on `query`.
-//             That index is exactly what turns a prefix search into a fast
-//             range-scan (see suggest.js), and gives us clean UPSERT semantics
-//             for the /search count increment (see search.js, Milestone 3).
-//   count  -> all-time popularity (basic ranking signal).
-//   last_searched_at -> unix ms of the most recent search; reserved for the
-//             recency-aware trending ranking in Milestone 5.
+//   query  -> TEXT PRIMARY KEY; the B-tree index on `query` turns a prefix
+//             search into a range scan and gives clean UPSERT semantics for the
+//             count increment.
+//   count  -> all-time popularity (ranking signal).
+//   last_searched_at -> unix ms of the most recent search; secondary recency signal.
 db.exec(`
   CREATE TABLE IF NOT EXISTS queries (
     query            TEXT PRIMARY KEY,

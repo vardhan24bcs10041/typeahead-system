@@ -1,13 +1,12 @@
-// trending.js — recency tracking via a SLIDING WINDOW of time buckets.
+// trending.js — recency tracking via a sliding window of time buckets.
 //
-// On each search we increment the query in the CURRENT time bucket (a Redis
-// sorted set). Buckets carry a TTL, so they self-delete once they age out of
-// the window — which is exactly why a short-lived spike can't be over-ranked
-// forever (it literally leaves the window).
+// Each search increments the query in the current time bucket (a Redis sorted
+// set). Buckets carry a TTL and self-delete once they age out of the window, so
+// a short-lived spike can't stay ranked forever — it leaves the window.
 //
-// Trending = a weighted union of the last W buckets (newer buckets weigh more).
+// Trending is a weighted union of the last W buckets (newer buckets weigh more).
 //
-// All trending keys live on ONE node: ZUNIONSTORE can't span Redis instances,
+// All trending keys live on one node: ZUNIONSTORE can't span Redis instances,
 // so the ring assigns the whole trending keyspace to a node via a fixed key.
 
 import { ring } from './cache/ringInstance.js';

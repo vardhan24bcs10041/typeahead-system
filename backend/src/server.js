@@ -5,7 +5,7 @@
 //   GET  /cache/debug?prefix=<p>    which node owns the prefix + hit/miss
 //   GET  /metrics                   cache hit rate, DB counts, p95 latency
 //   GET  /health                    liveness
-//   GET  /trending                  recency-aware trending (Milestone 5)
+//   GET  /trending                  recency-aware trending
 //
 // Routes stay thin: parse input, delegate to a focused module, respond.
 
@@ -32,7 +32,7 @@ app.use(express.static(FRONTEND_DIR));
 /**
  * GET /suggest?q=<prefix>&rank=<popular|trending>
  * Up to 10 prefix matches, cache-first. rank=popular (default) sorts by all-time
- * count; rank=trending re-ranks by recent activity (Milestone 5).
+ * count; rank=trending re-ranks by recent activity.
  */
 app.get('/suggest', async (req, res) => {
   const q = typeof req.query.q === 'string' ? req.query.q : '';

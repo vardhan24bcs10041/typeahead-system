@@ -1,9 +1,9 @@
 // search.js — read helper for the search flow.
 //
-// The WRITE path moved to batch.js (Milestone 6): searches are buffered and
-// flushed in aggregated batches rather than written synchronously. This module
-// now only reads the committed count, which /search adds to the pending buffer
-// value so the user sees their increment immediately.
+// The write path lives in batch.js: searches are buffered and flushed in
+// aggregated batches rather than written synchronously. This module only reads
+// the committed count, which /search adds to the pending buffer value so the
+// user sees their increment immediately.
 
 import db from './db.js';
 import { normalize } from './suggest.js';

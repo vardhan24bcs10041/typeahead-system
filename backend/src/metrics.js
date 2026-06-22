@@ -7,7 +7,7 @@ export const metrics = {
   cacheErrors: 0, // Redis call failed (node down) -> we fell back to the DB
   dbReads: 0,
 
-  // batch-write stats (Milestone 6)
+  // batch-write stats
   searchesBuffered: 0, // total search events accepted into the buffer
   flushes: 0,          // number of flush transactions
   rowsWritten: 0,      // total rows UPSERTed across all flushes

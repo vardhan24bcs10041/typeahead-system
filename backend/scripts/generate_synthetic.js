@@ -1,14 +1,14 @@
 // generate_synthetic.js — produce a realistic, reproducible >100k query dataset.
 //
-// WHY THIS EXISTS: the headline dataset is Wikipedia titles + view counts, but a
-// grader may run `docker-compose up` with no internet. This generator guarantees
-// the system always has >=100k rows to work with, and it is REPRODUCIBLE (a fixed
-// PRNG seed => identical data every run) so latency/cache numbers are comparable.
+// The headline dataset is Wikipedia titles + view counts, but the app must also
+// run with no internet. This generator guarantees at least 100k rows and is
+// reproducible (a fixed PRNG seed gives identical data every run), so
+// latency/cache numbers stay comparable across runs.
 //
-// REALISM: counts follow a Zipf / power-law distribution, because real search
-// popularity does — a few queries are searched enormously, with a very long tail.
-// Queries share head terms ("how to ...", "best ...", "iphone ...") so prefix
-// search has interesting, varied top-10 results to rank.
+// Counts follow a Zipf / power-law distribution like real search popularity — a
+// few queries searched enormously, with a long tail. Queries share head terms
+// ("how to ...", "best ...", "iphone ...") so prefix search has varied top-10
+// results to rank.
 
 // --- deterministic PRNG (mulberry32): seeded => reproducible -----------------
 function mulberry32(seed) {

@@ -1,20 +1,13 @@
-// ring.js — a consistent-hashing ring (Session 2 made real).
+// ring.js — a consistent-hashing ring.
 //
-// WHY NOT hash(key) % N:
-//   With N cache nodes, `hash(key) % N` spreads keys evenly — until N changes.
-//   Add or remove ONE node and (N-1)/N of all keys remap to a different node,
-//   flushing almost the whole cache and stampeding the DB.
+// `hash(key) % N` spreads keys evenly until N changes: add or remove one node
+// and (N-1)/N of all keys remap, flushing almost the whole cache. Instead, place
+// nodes and keys on a circular space [0, 2^32); a key is owned by the first node
+// clockwise from it, so a membership change only moves the keys in one arc (~1/N).
 //
-// CONSISTENT HASHING:
-//   Place nodes AND keys on a circular space [0, 2^32). A key is owned by the
-//   first node found CLOCKWISE from the key. Adding/removing a node only moves
-//   the keys in one arc (~1/N), leaving everyone else untouched.
-//
-// VIRTUAL NODES:
-//   With only 3 physical nodes, 3 ring points give lumpy load. So each physical
-//   node is placed at many points (`vnodes`, default 150). More points => the
-//   load evens out and rebalancing on membership change stays smooth. The cost
-//   is a little memory (vnodes * nodes ring entries).
+// Virtual nodes: with only 3 physical nodes, 3 ring points give lumpy load, so
+// each node is placed at many points (`vnodes`, default 150). More points even
+// out the load and keep rebalancing smooth, at the cost of a little memory.
 
 import crypto from 'node:crypto';
 
@@ -64,8 +57,7 @@ export class ConsistentHashRing {
 
   getPhysicalNodes() { return [...this.physical]; }
 
-  // Demo/evidence helper: route many sample keys and count per node, so we can
-  // SHOW the distribution is balanced (the "consistent-hashing behavior" log).
+  // Route many sample keys and count per node, to check the distribution is balanced.
   distribution(sampleCount = 10000) {
     const counts = Object.fromEntries(this.physical.map((n) => [n, 0]));
     for (let i = 0; i < sampleCount; i++) counts[this.getNode(`suggest:sample:${i}`)]++;

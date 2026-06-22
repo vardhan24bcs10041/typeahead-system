@@ -1,9 +1,9 @@
 // fetch_wikipedia.js — download a real Wikimedia "pageviews" dump and convert it
 // to the canonical queries.tsv ("<title>\t<views>") that ingest.js consumes.
 //
-// This is the HEADLINE dataset path (Wikipedia titles + view counts). It is
-// OPTIONAL for running the demo — ingest.js falls back to synthetic data — but
-// it's how you produce the real >100k dataset for the submission.
+// This is the headline dataset path (Wikipedia titles + view counts). It is
+// optional for running the app — ingest.js falls back to synthetic data — but
+// it's how you produce the real >100k dataset.
 //
 // Pageviews dump format (whitespace-separated):
 //   <domain_code> <page_title> <view_count> <total_response_bytes>

@@ -1,11 +1,11 @@
-// cache.js — cache-aside layer with TWO ranking modes.
+// cache.js — cache-aside layer with two ranking modes.
 //
-//   rank=popular  (default): top-10 by all-time count (M1 behavior).
-//   rank=trending          : candidate-generation + recency re-ranking (M5).
+//   rank=popular  (default): top-10 by all-time count.
+//   rank=trending          : candidate generation + recency re-ranking.
 //
-// Each mode has its OWN cache key (`suggest:<prefix>:<rank>`) because the two
-// rank differently. Trending entries use a shorter TTL since they change fast.
-// Every Redis call is best-effort: a node outage degrades us to the DB.
+// Each mode has its own cache key (`suggest:<prefix>:<rank>`) since they rank
+// differently; trending uses a shorter TTL since it changes fast. Every Redis
+// call is best-effort — a node outage degrades to the DB.
 
 import { ring } from './ringInstance.js';
 import { clientForNode } from './redisClients.js';

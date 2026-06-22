@@ -1,15 +1,15 @@
 // batch.js — write-behind buffer for search-count updates.
 //
-// Instead of one synchronous SQLite transaction per search (M3), searches
-// accumulate in an in-memory Map and are flushed together:
-//   - aggregated: 1,000 searches of "java" become ONE "count = count + 1000"
-//   - dual-triggered: flush every BATCH_INTERVAL_MS OR when the buffer reaches
-//     BATCH_MAX_SIZE distinct queries (whichever comes first)
+// Instead of one synchronous SQLite transaction per search, searches accumulate
+// in an in-memory Map and flush together:
+//   - aggregated: 1,000 searches of "java" become one "count = count + 1000"
+//   - dual-triggered: flush every BATCH_INTERVAL_MS or when the buffer reaches
+//     BATCH_MAX_SIZE distinct queries, whichever comes first
 //
-// TRADE-OFF (crash before flush): a search is acked immediately but only
-// durable after the next flush. A hard crash loses up to one flush window of
-// buffered counts. We mitigate with a graceful-shutdown drain (stopAndDrain);
-// the production fix is a durable log (WAL / Redis list / Kafka — Session 5).
+// Trade-off: a search is acked immediately but only durable after the next
+// flush, so a hard crash loses up to one flush window of buffered counts. The
+// graceful-shutdown drain (stopAndDrain) covers normal restarts; a production
+// system would back this with a durable log.
 
 import db from './db.js';
 import { metrics } from './metrics.js';
